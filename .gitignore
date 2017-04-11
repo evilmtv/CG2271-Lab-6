@@ -1,0 +1,7 @@
+.metadata/*
+freeRTOS/*
+RemoteSystemsTempFiles/*
+lab4/.settings/*
+lab4/Release/*
+lab4/.cproject
+lab4/.project
