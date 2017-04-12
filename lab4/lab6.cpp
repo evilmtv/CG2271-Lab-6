@@ -42,6 +42,7 @@ int current_distance;
 
 int up = 1;
 int down = 2;
+int note = lvla;
 
 SemaphoreHandle_t xSemaphore = xSemaphoreCreateMutex();
 
@@ -53,6 +54,7 @@ int minimum(int a, int b) {
 	}
 }
 
+/*
 void playTone(int tone) {
 	int duration = 10000;
 	int rest_count = 500;
@@ -78,29 +80,38 @@ void playTone(int tone) {
     }
   }
 }
+*/
 
 void setLEDs(int speed, int speedsetting, int currentdistance) {
 	if (speed == 0) {
 		digitalWrite(PIN_LED6, LOW);
 		digitalWrite(PIN_LED7, LOW);
 		digitalWrite(PIN_LED8, LOW);
-		playTone(lvla);
+		//playTone(lvla);
+		note=lvla;
+		tone(PIN_SPKR, note);
 		//Serial.println("0 OK");
 	} else if (speed == 1) {
 		digitalWrite(PIN_LED6, HIGH);
 		digitalWrite(PIN_LED7, LOW);
 		digitalWrite(PIN_LED8, LOW);
-		playTone(lvl1);
+		note=lvl1;
+		tone(PIN_SPKR, note);
+		//playTone(lvl1);
 	} else if (speed == 2) {
 		digitalWrite(PIN_LED6, HIGH);
 		digitalWrite(PIN_LED7, HIGH);
 		digitalWrite(PIN_LED8, LOW);
-		playTone(lvl2);
+		note=lvl2;
+		tone(PIN_SPKR, note);
+		//playTone(lvl2);
 	} else if (speed == 3) {
 		digitalWrite(PIN_LED6, HIGH);
 		digitalWrite(PIN_LED7, HIGH);
 		digitalWrite(PIN_LED8, HIGH);
-		playTone(lvl3);
+		note=lvl3;
+		tone(PIN_SPKR, note);
+		//playTone(lvl3);
 	}
 	if (speedsetting > currentdistance) {
 		digitalWrite(PIN_LED9, HIGH);
