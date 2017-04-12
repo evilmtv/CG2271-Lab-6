@@ -14,14 +14,22 @@
 #define PIN_0 0
 #define PIN_1 1
 #define PIN_SPKR 10
+#define PIN_MTR 11
 
 // TONES  ==========================================
-#define  lvla     100
+#define  lvl0     100
 #define  lvl1     600
 #define  lvl2     1100
 #define  lvl3     1600
 // Define a special note, 'R', to represent a rest
 #define  lvl0     0
+
+// SPEEDS  =========================================
+#define  splvl0     130
+#define  splvl1     180
+#define  splvl2     210
+#define  splvl3     255
+
 
 struct values {
 	int desired;
@@ -34,13 +42,13 @@ QueueHandle_t xQueueOutput = xQueueCreate(5, sizeof(int));
 unsigned long debounce_time = 150;
 volatile unsigned long last_millisDeBounce0;
 volatile unsigned long last_millisDeBounce1;
-int speed_setting = 0;
+int speed_setting = 3;
 int current_speed = 0;
 int current_distance;
 
 int up = 1;
 int down = 2;
-int note = lvla;
+int note = lvl0;
 
 SemaphoreHandle_t xSemaphore = xSemaphoreCreateMutex();
 
@@ -57,27 +65,27 @@ void setLEDs(int speed, int speedsetting, int currentdistance) {
 		digitalWrite(PIN_LED6, LOW);
 		digitalWrite(PIN_LED7, LOW);
 		digitalWrite(PIN_LED8, LOW);
-		note = lvla;
-		tone(PIN_SPKR, note);
+		tone(PIN_SPKR, lvl0);
+		analogWrite(PIN_MTR, splvl0);
 		//Serial.println("0 OK");
 	} else if (speed == 1) {
 		digitalWrite(PIN_LED6, HIGH);
 		digitalWrite(PIN_LED7, LOW);
 		digitalWrite(PIN_LED8, LOW);
-		note = lvl1;
-		tone(PIN_SPKR, note);
+		tone(PIN_SPKR, lvl1);
+		analogWrite(PIN_MTR, splvl1);
 	} else if (speed == 2) {
 		digitalWrite(PIN_LED6, HIGH);
 		digitalWrite(PIN_LED7, HIGH);
 		digitalWrite(PIN_LED8, LOW);
-		note = lvl2;
-		tone(PIN_SPKR, note);
+		tone(PIN_SPKR, lvl2);
+		analogWrite(PIN_MTR, splvl2);
 	} else if (speed == 3) {
 		digitalWrite(PIN_LED6, HIGH);
 		digitalWrite(PIN_LED7, HIGH);
 		digitalWrite(PIN_LED8, HIGH);
-		note = lvl3;
-		tone(PIN_SPKR, note);
+		tone(PIN_SPKR, lvl3);
+		analogWrite(PIN_MTR, splvl3);
 	}
 	if (speedsetting > currentdistance) {
 		digitalWrite(PIN_LED9, HIGH);
@@ -220,6 +228,7 @@ void setup() {
 	pinMode(PIN_LED8, OUTPUT);
 	pinMode(PIN_LED9, OUTPUT);
 	pinMode(PIN_SPKR, OUTPUT);
+	pinMode(PIN_MTR, OUTPUT);
 	attachInterrupt(PIN_0, int0ISR, FALLING);
 	attachInterrupt(PIN_1, int1ISR, FALLING);
 	Serial.begin(115200);
