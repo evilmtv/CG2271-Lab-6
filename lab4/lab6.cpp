@@ -16,12 +16,10 @@
 #define PIN_SPKR 10
 
 // TONES  ==========================================
-// Start by defining the relationship between
-//       note, period, &  frequency.
-#define  lvla     4000    // 261 Hz
-#define  lvl1     3000    // 329 Hz
-#define  lvl2     2000    // 392 Hz
-#define  lvl3     1000    // 493 Hz
+#define  lvla     100
+#define  lvl1     600
+#define  lvl2     1100
+#define  lvl3     1600
 // Define a special note, 'R', to represent a rest
 #define  lvl0     0
 
@@ -54,64 +52,32 @@ int minimum(int a, int b) {
 	}
 }
 
-/*
-void playTone(int tone) {
-	int duration = 10000;
-	int rest_count = 500;
-  long elapsed_time = 0;
-  if (tone > 0) { // if this isn't a Rest beat, while the tone has
-    //  played less long than 'duration', pulse speaker HIGH and LOW
-    while (elapsed_time < duration) {
-
-      digitalWrite(PIN_SPKR,HIGH);
-      delayMicroseconds(tone / 2);
-
-      // DOWN
-      digitalWrite(PIN_SPKR, LOW);
-      delayMicroseconds(tone / 2);
-
-      // Keep track of how long we pulsed
-      elapsed_time += (tone);
-    }
-  }
-  else { // Rest beat; loop times delay
-    for (int j = 0; j < rest_count; j++) { // See NOTE on rest_count
-      delayMicroseconds(duration);
-    }
-  }
-}
-*/
-
 void setLEDs(int speed, int speedsetting, int currentdistance) {
 	if (speed == 0) {
 		digitalWrite(PIN_LED6, LOW);
 		digitalWrite(PIN_LED7, LOW);
 		digitalWrite(PIN_LED8, LOW);
-		//playTone(lvla);
-		note=lvla;
+		note = lvla;
 		tone(PIN_SPKR, note);
 		//Serial.println("0 OK");
 	} else if (speed == 1) {
 		digitalWrite(PIN_LED6, HIGH);
 		digitalWrite(PIN_LED7, LOW);
 		digitalWrite(PIN_LED8, LOW);
-		note=lvl1;
+		note = lvl1;
 		tone(PIN_SPKR, note);
-		//playTone(lvl1);
 	} else if (speed == 2) {
 		digitalWrite(PIN_LED6, HIGH);
 		digitalWrite(PIN_LED7, HIGH);
 		digitalWrite(PIN_LED8, LOW);
-		note=lvl2;
+		note = lvl2;
 		tone(PIN_SPKR, note);
-		//playTone(lvl2);
 	} else if (speed == 3) {
 		digitalWrite(PIN_LED6, HIGH);
 		digitalWrite(PIN_LED7, HIGH);
 		digitalWrite(PIN_LED8, HIGH);
-		note=lvl3;
+		note = lvl3;
 		tone(PIN_SPKR, note);
-		//playTone(lvl3);
 	}
 	if (speedsetting > currentdistance) {
 		digitalWrite(PIN_LED9, HIGH);
