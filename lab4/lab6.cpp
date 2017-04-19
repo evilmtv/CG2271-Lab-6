@@ -9,27 +9,24 @@
 #define PIN_LED6 6
 #define PIN_LED7 7
 #define PIN_LED8 8
-#define PIN_LED9 9
+#define PIN_LED9 11
 #define PIN_PTTM 0
 #define PIN_0 0
 #define PIN_1 1
 #define PIN_SPKR 10
-#define PIN_MTR 11
+#define PIN_MTR 9
 
 // TONES  ==========================================
-#define  lvl0     100
+#define  lvl0     0
 #define  lvl1     600
 #define  lvl2     1100
 #define  lvl3     1600
-// Define a special note, 'R', to represent a rest
-#define  lvl0     0
 
 // SPEEDS  =========================================
-#define  splvl0     130
-#define  splvl1     180
-#define  splvl2     210
+#define  splvl0     0
+#define  splvl1     80
+#define  splvl2     130
 #define  splvl3     255
-
 
 struct values {
 	int desired;
@@ -39,12 +36,15 @@ struct values {
 
 QueueHandle_t xQueueSpeed = xQueueCreate(5, sizeof(int));
 QueueHandle_t xQueueOutput = xQueueCreate(5, sizeof(int));
-unsigned long debounce_time = 150;
+unsigned long debounce_time = 300;
 volatile unsigned long last_millisDeBounce0;
 volatile unsigned long last_millisDeBounce1;
-int speed_setting = 3;
+int speed_setting = 0;
 int current_speed = 0;
 int current_distance;
+
+int oldspeed = 0;
+int prevtime = 0;
 
 int up = 1;
 int down = 2;
@@ -60,12 +60,13 @@ int minimum(int a, int b) {
 	}
 }
 
-void setLEDs(int speed, int speedsetting, int currentdistance) {
+void setLEDs(int speed, int speedsetting, int currentdistance,
+		int currenttime) {
 	if (speed == 0) {
 		digitalWrite(PIN_LED6, LOW);
 		digitalWrite(PIN_LED7, LOW);
 		digitalWrite(PIN_LED8, LOW);
-		tone(PIN_SPKR, lvl0);
+		noTone(PIN_SPKR);
 		analogWrite(PIN_MTR, splvl0);
 		//Serial.println("0 OK");
 	} else if (speed == 1) {
@@ -87,11 +88,15 @@ void setLEDs(int speed, int speedsetting, int currentdistance) {
 		tone(PIN_SPKR, lvl3);
 		analogWrite(PIN_MTR, splvl3);
 	}
-	if (speedsetting > currentdistance) {
+
+	if (speedsetting > currentdistance && oldspeed > speed) {
 		digitalWrite(PIN_LED9, HIGH);
-	} else {
+		prevtime = currenttime;
+	}
+	if ((currenttime - prevtime) > 1000) {
 		digitalWrite(PIN_LED9, LOW);
 	}
+	oldspeed = speed;
 }
 
 void taskReadDistance(void *p) {
@@ -127,7 +132,8 @@ void taskSetSpeed(void *p) {
 	while (1) {
 		if ( xSemaphoreTake( xSemaphore, portMAX_DELAY ) == pdTRUE) {
 			current_speed = minimum(speed_setting, current_distance);
-			setLEDs(current_speed, speed_setting, current_distance);
+			setLEDs(current_speed, speed_setting, current_distance,
+					xLastWakeTime);
 			xQueueSendToBack(xQueueOutput, (void * ) &current_speed,
 					(TickType_t ) 10);
 			xQueueSendToBack(xQueueOutput, (void * ) &speed_setting,
